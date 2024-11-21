@@ -1444,7 +1444,7 @@ RCTAutoInsetsProtocol>
     if (@available(iOS 13, macOS 10.15, *)) {
       disposition = [response valueForHTTPHeaderField:@"Content-Disposition"];
     }
-    BOOL isAttachment = disposition != nil && [disposition hasPrefix:@"attachment"];
+    BOOL isAttachment = disposition != nil && ([disposition hasPrefix:@"attachment"] || [disposition hasPrefix:@"inline"]);
     if (isAttachment || !navigationResponse.canShowMIMEType) {
       if (_onFileDownload) {
         policy = WKNavigationResponsePolicyCancel;
@@ -1452,6 +1452,7 @@ RCTAutoInsetsProtocol>
         NSMutableDictionary<NSString *, id> *downloadEvent = [self baseEvent];
         [downloadEvent addEntriesFromDictionary: @{
           @"downloadUrl": (response.URL).absoluteString,
+          @"disposition-header": disposition,
         }];
         _onFileDownload(downloadEvent);
       }
